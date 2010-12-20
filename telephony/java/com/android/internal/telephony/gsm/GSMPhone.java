@@ -1506,4 +1506,8 @@ public class GSMPhone extends PhoneBase {
         Log.e(LOG_TAG, "[GSMPhone] setCellBroadcastSmsConfig() is obsolete; use SmsManager");
         response.sendToTarget();
     }
+
+    public boolean isCspPlmnEnabled() {
+        return mSIMRecords.isCspPlmnEnabled();
+    }
 }
