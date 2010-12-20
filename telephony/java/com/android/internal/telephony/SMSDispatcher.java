@@ -114,7 +114,7 @@ public abstract class SMSDispatcher extends Handler {
     /** New broadcast SMS */
     static final protected int EVENT_NEW_BROADCAST_SMS = 13;
 
-    protected Phone mPhone;
+    protected VoicePhone mPhone;
     protected Context mContext;
     protected ContentResolver mResolver;
     protected CommandsInterface mCm;
@@ -221,7 +221,7 @@ public abstract class SMSDispatcher extends Handler {
 
     protected SMSDispatcher(PhoneBase phone) {
         mPhone = phone;
-        mWapPush = new WapPushOverSms(phone, this);
+        mWapPush = new WapPushOverSms(phone.getContext(), this);
         mContext = phone.getContext();
         mResolver = mContext.getContentResolver();
         mCm = phone.mCM;

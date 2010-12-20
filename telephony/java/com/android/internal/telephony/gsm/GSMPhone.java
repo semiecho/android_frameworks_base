@@ -1549,13 +1549,6 @@ public class GSMPhone extends PhoneBase {
         return mSIMRecords.isCspPlmnEnabled();
     }
 
-    public int getCspPlmnStatus() {
-        if (mSIMRecords != null) {
-            return mSIMRecords.getCspPlmn();
-        }
-        return 1;
-    }
-
     private void registerForSimRecordEvents() {
         mSIMRecords.registerForNetworkSelectionModeAutomatic(this, EVENT_SET_NETWORK_AUTOMATIC, null);
         mSIMRecords.registerForNewSms(this, EVENT_NEW_ICC_SMS, null);
