@@ -368,7 +368,7 @@ public class SipPhone extends SipPhoneBase {
         }
 
         @Override
-        public Phone getPhone() {
+        public VoicePhone getPhone() {
             return SipPhone.this;
         }
 
@@ -802,7 +802,7 @@ public class SipPhone extends SipPhoneBase {
         }
 
         @Override
-        protected Phone getPhone() {
+        protected VoicePhone getPhone() {
             return mOwner.getPhone();
         }
 
