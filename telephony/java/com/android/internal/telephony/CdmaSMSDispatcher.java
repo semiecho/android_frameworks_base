@@ -63,7 +63,7 @@ final class CdmaSMSDispatcher extends SMSDispatcher {
     private boolean mCheckForDuplicatePortsInOmadmWapPush = Resources.getSystem().getBoolean(
             com.android.internal.R.bool.config_duplicate_port_omadm_wappush);
 
-    CdmaSMSDispatcher(VoicePhone phone, CommandsInterface cm) {
+    CdmaSMSDispatcher(Phone phone, CommandsInterface cm) {
         super(phone, cm);
         Log.d(TAG, "Register for EVENT_NEW_SMS");
         mCm.setOnNewCdmaSMS(this, EVENT_NEW_SMS, null);
@@ -227,7 +227,7 @@ final class CdmaSMSDispatcher extends SMSDispatcher {
 
     /** {@inheritDoc} */
     protected int getEncoding() {
-        return VoicePhone.PHONE_TYPE_CDMA;
+        return Phone.PHONE_TYPE_CDMA;
     }
 
     /**

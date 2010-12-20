@@ -59,7 +59,7 @@ import android.util.EventLog;
 import android.util.Log;
 import android.util.Config;
 import com.android.internal.app.IBatteryStats;
-import com.android.internal.telephony.DataPhone.IPVersion;
+import com.android.internal.telephony.Phone.IPVersion;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

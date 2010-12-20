@@ -142,7 +142,7 @@ public abstract class SMSDispatcher extends Handler {
     static protected boolean mIms = false;
     static protected RadioTechnologyFamily mImsSmsEncoding = RadioTechnologyFamily.RADIO_TECH_UNKNOWN;
     static protected Registrant mSendRetryRegistrant;
-    static protected VoicePhone mPhone;
+    static protected Phone mPhone;
 
 >>>>>>> 8b52de4... SMS over IMS
     protected Context mContext;
@@ -254,7 +254,7 @@ public abstract class SMSDispatcher extends Handler {
         }
     }
 
-    protected SMSDispatcher(VoicePhone phone, CommandsInterface cm) {
+    protected SMSDispatcher(Phone phone, CommandsInterface cm) {
         mPhone = phone;
         mWapPush = new WapPushOverSms(phone.getContext(), this);
         mContext = phone.getContext();
@@ -285,7 +285,7 @@ public abstract class SMSDispatcher extends Handler {
         mUiccManager.registerForIccChanged(this, EVENT_ICC_CHANGED, null);
     }
 
-    protected void updatePhoneObject(VoicePhone phone) {
+    protected void updatePhoneObject(Phone phone) {
         mPhone = phone;
         String phoneType =
             (phone instanceof com.android.internal.telephony.cdma.CDMAPhone ) ?
@@ -542,7 +542,7 @@ public abstract class SMSDispatcher extends Handler {
                 Log.d(TAG, "SMS send failed");
             }
 
-            int ss = mPhone.getVoiceServiceState().getState();
+            int ss = mPhone.getServiceState().getState();
 
             // if IMS not registered on data and voice is not available...
             if (!isIms() && ss != ServiceState.STATE_IN_SERVICE) {
@@ -698,8 +698,8 @@ public abstract class SMSDispatcher extends Handler {
                 // figure out if call to this function was originated from gsm/cdma MT SMS
                 int encoding =
                     (this instanceof CdmaSMSDispatcher) ?
-                            VoicePhone.PHONE_TYPE_CDMA :
-                                VoicePhone.PHONE_TYPE_GSM;
+                            Phone.PHONE_TYPE_CDMA :
+                                Phone.PHONE_TYPE_GSM;
                 // Build up the data stream
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
                 for (int i = 0; i < concatRef.msgCount; i++) {
@@ -870,7 +870,7 @@ public abstract class SMSDispatcher extends Handler {
             return;
         }
 
-        int ss = mPhone.getVoiceServiceState().getState();
+        int ss = mPhone.getServiceState().getState();
 
         // if IMS not registered on data and voice is not available...
         if (!isIms() && ss != ServiceState.STATE_IN_SERVICE) {
@@ -1104,7 +1104,7 @@ public abstract class SMSDispatcher extends Handler {
     protected boolean isCdmaMo() {
         if (!isIms()) {
             // IMS is not registered, use Voice technology to determine SMS encoding.
-            return (VoicePhone.PHONE_TYPE_CDMA == mPhone.getPhoneType());
+            return (Phone.PHONE_TYPE_CDMA == mPhone.getPhoneType());
         }
         // IMS is registered
         return isImsSmsEncodingCdma();
