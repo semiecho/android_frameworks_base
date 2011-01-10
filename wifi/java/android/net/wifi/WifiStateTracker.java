@@ -108,6 +108,7 @@ public class WifiStateTracker extends NetworkStateTracker {
     private static final int EVENT_DRIVER_STATE_CHANGED              = 13;
     private static final int EVENT_PASSWORD_KEY_MAY_BE_INCORRECT     = 14;
     private static final int EVENT_MAYBE_START_SCAN_POST_DISCONNECT  = 15;
+    private static final int EVENT_NO_MORE_WIFI_LOCKS                = 16;
 
     /**
      * The driver state indication.
@@ -228,6 +229,7 @@ public class WifiStateTracker extends NetworkStateTracker {
     private int mLastNetworkId = -1;
     private boolean mUseStaticIp = false;
     private int mReconnectCount;
+    private boolean mHasWifiLocks = false;
 
     private AlarmManager mAlarmManager;
     private PendingIntent mDhcpRenewalIntent;
@@ -826,6 +828,22 @@ public class WifiStateTracker extends NetworkStateTracker {
         }
     }
 
+    public void setHasWifiLocks(boolean hasLocks){
+        mHasWifiLocks = hasLocks;
+        /* if there are no locks now send the network info
+         * so that we can take action to see if wifi is needed
+         */
+        if(!mHasWifiLocks){
+            Message msg = Message.obtain(
+                this, EVENT_NO_MORE_WIFI_LOCKS);
+                msg.sendToTarget();
+        }
+    }
+
+    public boolean hasWifiLocks(){
+        return mHasWifiLocks;
+    }
+
     /**
      * We release the wakelock in WifiService
      * using a timer.
@@ -1363,6 +1381,16 @@ public class WifiStateTracker extends NetworkStateTracker {
             case EVENT_PASSWORD_KEY_MAY_BE_INCORRECT:
                 mPasswordKeyMayBeIncorrect = true;
                 break;
+
+            case EVENT_NO_MORE_WIFI_LOCKS:
+                /* when there are no more wifi locks send this network state
+                 * change intent so that it notifies that wifi is still
+                 * connected and if it needs to be brought down they can issue
+                 * the teardown command.
+                 */
+                sendNetworkStateChangeBroadcast(mWifiInfo.getBSSID());
+                break;
+
         }
     }
 
@@ -1619,6 +1647,13 @@ public class WifiStateTracker extends NetworkStateTracker {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Reset mTornDownbyConnMgr flag.
+     */
+    public void resetTornDownbyConnMgr() {
+        mTornDownByConnMgr = false;
     }
 
     /**

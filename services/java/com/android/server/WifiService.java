@@ -2430,6 +2430,9 @@ public class WifiService extends IWifiManager.Stub {
             Binder.restoreCallingIdentity(ident);
         }
 
+        mWifiStateTracker.setHasWifiLocks(mLocks.hasLocks());
+        // TODO - should this only happen if you hadLock?
+        updateWifiState();
         return hadLock;
     }
 

@@ -437,6 +437,11 @@ public abstract class NetworkStateTracker extends Handler {
     public abstract boolean reconnect();
 
     /**
+     * Reset torn-down by Connection Manager flag.
+     */
+    public abstract void resetTornDownbyConnMgr();
+
+    /**
      * Turn the wireless radio off for a network.
      * @param turnOn {@code true} to turn the radio on, {@code false}
      */
