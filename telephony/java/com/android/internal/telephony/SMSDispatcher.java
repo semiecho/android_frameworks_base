@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -35,11 +36,9 @@ import android.os.AsyncResult;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-<<<<<<< HEAD
-=======
 import android.os.StatFs;
 import android.os.Registrant;
->>>>>>> 8b52de4... SMS over IMS
+import android.preference.PreferenceManager;
 import android.provider.Telephony;
 import android.provider.Telephony.Sms.Intents;
 import android.provider.Settings;
@@ -117,12 +116,9 @@ public abstract class SMSDispatcher extends Handler {
     /** Radio is ON */
     static final protected int EVENT_RADIO_ON = 12;
 
-<<<<<<< HEAD
     /** New broadcast SMS */
     static final protected int EVENT_NEW_BROADCAST_SMS = 13;
 
-    protected VoicePhone mPhone;
-=======
     /** IMS registration/SMS encoding changed */
     static final protected int EVENT_IMS_STATE_CHANGED = 13;
 
@@ -137,6 +133,8 @@ public abstract class SMSDispatcher extends Handler {
 
     static final protected int EVENT_NEW_ICC_SMS = 17;
 
+    static final protected int EVENT_UPDATE_ICC_MWI = 18;
+
     /** Must be static as they are referenced by 3 derived instances, Ims/Cdma/GsmSMSDispatcher */
     /** true if IMS is registered, false otherwise.*/
     static protected boolean mIms = false;
@@ -144,7 +142,6 @@ public abstract class SMSDispatcher extends Handler {
     static protected Registrant mSendRetryRegistrant;
     static protected Phone mPhone;
 
->>>>>>> 8b52de4... SMS over IMS
     protected Context mContext;
     protected ContentResolver mResolver;
     protected CommandsInterface mCm;
@@ -437,11 +434,9 @@ public abstract class SMSDispatcher extends Handler {
                         obtainMessage(EVENT_REPORT_MEMORY_STATUS_DONE));
             }
             break;
-
-<<<<<<< HEAD
         case EVENT_NEW_BROADCAST_SMS:
             handleBroadcastSms((AsyncResult)msg.obj);
-=======
+            break;
         case EVENT_ICC_CHANGED:
             updateIccAvailability();
             break;
@@ -449,7 +444,16 @@ public abstract class SMSDispatcher extends Handler {
         case EVENT_NEW_ICC_SMS:
             ar = (AsyncResult)msg.obj;
             dispatchMessage((SmsMessageBase)ar.result);
->>>>>>> 8b52de4... SMS over IMS
+            break;
+
+        case EVENT_UPDATE_ICC_MWI:
+            ar = (AsyncResult) msg.obj;
+            if ( ar == null)
+                break;
+            if (ar.exception != null) {
+                Log.v(TAG, " MWI update on card failed " + ar.exception );
+                storeVoiceMailCount();
+            }
             break;
         }
     }
@@ -1126,4 +1130,22 @@ public abstract class SMSDispatcher extends Handler {
         }
         return null;
     }
+
+    protected void storeVoiceMailCount() {
+        // Store the voice mail count in persistent memory.
+        String imsi = mPhone.getSubscriberId();
+        int mwi = mPhone.getVoiceMessageCount();
+
+        Log.d(TAG, " Storing Voice Mail Count = " + mwi
+                    + " for imsi = " + imsi
+                    + " in preferences.");
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(((PhoneBase)mPhone).VM_COUNT, mwi);
+        editor.putString(((PhoneBase)mPhone).VM_ID, imsi);
+        editor.commit();
+
+    }
+
 }
